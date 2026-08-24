@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Portfolio | Decentralized Future</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: rgba(22, 28, 41, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --accent-cyan: #06b6d4;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header / Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0 60px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 36px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Grid Sections */
+        .section-title {
+            font-size: 1.8rem;
+            margin: 60px 0 30px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            color: var(--accent-cyan);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 100px;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="container">
+        <header>
+            <div class="logo">Web3 Portfolio</div>
+            <nav>
+                <a href="#projects">Projects</a>
+                <a href="#skills">Skills</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <span class="badge">Decentralized &amp; Scalable Solutions</span>
+            <h1>Architecting the Next Era of Web3 Apps</h1>
+            <p>Smart Contracts, Zero-Knowledge Proofs, DeFi Protocols, and Intuitive dApp Experiences built for global scale.</p>
+            <a href="#projects" class="cta-btn">Explore Projects</a>
+        </section>
+
+        <h2 class="section-title" id="projects">Featured Projects</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Verse Trading MVP</h3>
+                <p>Decentralized trading engine with high-throughput order matching and automated liquidity provisioning.</p>
+                <div class="tags">
+                    <span class="tag">Solidity</span>
+                    <span class="tag">Ethers.js</span>
+                    <span class="tag">React</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3>ZeroCup Prediction Market</h3>
+                <p>Zero-knowledge verifiable prediction market protocol ensuring complete user privacy and fast settlement.</p>
+                <div class="tags">
+                    <span class="tag">Circom</span>
+                    <span class="tag">zk-SNARKs</span>
+                    <span class="tag">Next.js</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Cross-Chain Yield Vault</h3>
+                <p>Automated strategy vault optimizing yields across multiple Layer 2 ecosystems seamlessly.</p>
+                <div class="tags">
+                    <span class="tag">LayerZero</span>
+                    <span class="tag">Hardhat</span>
+                    <span class="tag">TypeScript</span>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="skills">Core Stack</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Smart Contract Engineering</h3>
+                <p>Solidity, Rust, Vyper, Hardhat, Foundry, OpenZeppelin Standards, Gas Optimization, Security Auditing.</p>
+            </div>
+            <div class="card">
+                <h3>Frontend &amp; Infrastructure</h3>
+                <p>React, Next.js, Wagmi, Viem, Web3.js, IPFS, The Graph Indexing, Chainlink Oracles.</p>
+            </div>
+            <div class="card">
+                <h3>Privacy &amp; Layer 2</h3>
+                <p>zk-SNARKs, Circom, Arbitrum Stylus, Optimism Rollups, Cross-chain messaging protocols.</p>
+            </div>
+        </div>
+
+        <footer id="contact">
+            <p>&copy; 2026 Web3 Portfolio. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Particle Background Animation
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = [];
+        const particleCount = 45;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5 + 0.5,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(99, 102, 241, ${p.alpha})`;
+                ctx.fill();
+
+                for (let j = index + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
